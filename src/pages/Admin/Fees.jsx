@@ -5,7 +5,6 @@ const Fees = () => {
 
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
-
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   const [search, setSearch] = useState("");
@@ -13,30 +12,25 @@ const Fees = () => {
 
   const recordsPerPage = 15;
 
-  useEffect(() => {
+  /* ================= FETCH STUDENTS ================= */
 
-    const fetchStudents = async () => {
+   const fetchStudents = async () => {
+  try {
+    const res = await getStudents();
+    console.log("API response:", res); // ← add this temporarily
+    const data = res?.data?.data || [];
+    setStudents(data);
+    setFilteredStudents(data);
+  } catch (error) {
+    console.error("Failed to fetch students", error.response?.data); // ← more detail
+    console.error("Status:", error.response?.status);
+  }
+};
 
-      try {
+useEffect(() => {
+  fetchStudents();
+}, []);
 
-        const res = await getStudents();
-
-        const data = res.data.data || [];
-
-        setStudents(data);
-        setFilteredStudents(data);
-
-      } catch (error) {
-
-        console.error("Failed to fetch students", error);
-
-      }
-
-    };
-
-    fetchStudents();
-
-  }, []);
 
   /* ================= SEARCH ================= */
 
@@ -93,8 +87,6 @@ const Fees = () => {
 
     <div>
 
-      {/* HEADER */}
-
       <h1 className="text-2xl font-bold mb-6">
         Fee Management
       </h1>
@@ -104,30 +96,18 @@ const Fees = () => {
       <div className="grid md:grid-cols-3 gap-6 mb-8">
 
         <div className="bg-white p-6 rounded-xl shadow">
-          <p className="text-gray-500 text-sm">
-            Total Students
-          </p>
-          <h2 className="text-3xl font-bold">
-            {students.length}
-          </h2>
+          <p className="text-gray-500 text-sm">Total Students</p>
+          <h2 className="text-3xl font-bold">{students.length}</h2>
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow">
-          <p className="text-gray-500 text-sm">
-            Fees Paid
-          </p>
-          <h2 className="text-3xl font-bold text-green-600">
-            {paid}
-          </h2>
+          <p className="text-gray-500 text-sm">Fees Paid</p>
+          <h2 className="text-3xl font-bold text-green-600">{paid}</h2>
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow">
-          <p className="text-gray-500 text-sm">
-            Pending Fees
-          </p>
-          <h2 className="text-3xl font-bold text-red-600">
-            {pending}
-          </h2>
+          <p className="text-gray-500 text-sm">Pending Fees</p>
+          <h2 className="text-3xl font-bold text-red-600">{pending}</h2>
         </div>
 
       </div>
@@ -135,7 +115,6 @@ const Fees = () => {
       {/* SEARCH */}
 
       <div className="mb-6">
-
         <input
           type="text"
           placeholder="Search by name or ID..."
@@ -143,7 +122,6 @@ const Fees = () => {
           onChange={(e)=>setSearch(e.target.value)}
           className="border px-4 py-2 rounded-lg w-[260px]"
         />
-
       </div>
 
       {/* TABLE */}
@@ -153,7 +131,6 @@ const Fees = () => {
         <table className="w-full text-sm">
 
           <thead className="bg-gray-50 text-gray-600">
-
             <tr>
               <th className="p-4 text-left">Student</th>
               <th className="p-4 text-left">Department</th>
@@ -162,7 +139,6 @@ const Fees = () => {
               <th className="p-4 text-left">Fee Status</th>
               <th className="p-4 text-left">Profile</th>
             </tr>
-
           </thead>
 
           <tbody>
@@ -174,18 +150,13 @@ const Fees = () => {
                 className="border-b hover:bg-gray-50"
               >
 
-                {/* STUDENT */}
-
                 <td className="p-4 flex items-center gap-3">
 
                   <div className="w-10 h-10 bg-indigo-100 text-indigo-600 flex items-center justify-center rounded-full font-bold">
-
                     {student.first_name.charAt(0)}
-
                   </div>
 
                   <div>
-
                     <p className="font-semibold">
                       {student.first_name} {student.last_name}
                     </p>
@@ -193,24 +164,13 @@ const Fees = () => {
                     <p className="text-xs text-gray-500">
                       ID: {student.student_id}
                     </p>
-
                   </div>
 
                 </td>
 
-                <td className="p-4">
-                  {student.department}
-                </td>
-
-                <td className="p-4">
-                  {student.course}
-                </td>
-
-                <td className="p-4">
-                  {student.year}
-                </td>
-
-                {/* FEE STATUS */}
+                <td className="p-4">{student.department}</td>
+                <td className="p-4">{student.course}</td>
+                <td className="p-4">{student.year}</td>
 
                 <td className="p-4">
 
@@ -222,14 +182,10 @@ const Fees = () => {
                         : "bg-red-100 text-red-700"
                     }`}
                   >
-
                     {student.fee_status || "Pending"}
-
                   </span>
 
                 </td>
-
-                {/* PROFILE */}
 
                 <td className="p-4">
 
@@ -276,45 +232,6 @@ const Fees = () => {
         ))}
 
       </div>
-
-      {/* PROFILE MODAL */}
-
-      {selectedStudent && (
-
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-
-          <div className="bg-white w-[520px] rounded-xl p-6 shadow-lg">
-
-            <h2 className="text-xl font-bold mb-4">
-              Student Profile
-            </h2>
-
-            <div className="space-y-2 text-sm">
-
-              <p><b>Name:</b> {selectedStudent.first_name} {selectedStudent.last_name}</p>
-              <p><b>Email:</b> {selectedStudent.email}</p>
-              <p><b>Phone:</b> {selectedStudent.phone}</p>
-              <p><b>Gender:</b> {selectedStudent.gender}</p>
-              <p><b>DOB:</b> {selectedStudent.dob}</p>
-              <p><b>Course:</b> {selectedStudent.course}</p>
-              <p><b>Department:</b> {selectedStudent.department}</p>
-              <p><b>Year:</b> {selectedStudent.year}</p>
-              <p><b>Semester:</b> {selectedStudent.semester}</p>
-
-            </div>
-
-            <button
-              onClick={()=>setSelectedStudent(null)}
-              className="mt-6 bg-indigo-600 text-white px-4 py-2 rounded"
-            >
-              Close
-            </button>
-
-          </div>
-
-        </div>
-
-      )}
 
     </div>
 

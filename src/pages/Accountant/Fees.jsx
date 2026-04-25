@@ -9,25 +9,25 @@ const Fees = () => {
 
   const handlePay = async () => {
 
-    try {
+  try {
 
-      await payFee({
-        studentId,
-        amount
-      });
+    await payFee({
+      studentId,
+      amount
+    });
 
-      toast.success("Fee paid successfully");
+    toast.success("Fee paid successfully");
 
-      setStudentId("");
-      setAmount("");
+    setStudentId("");
+    setAmount("");
 
-    } catch {
+  } catch {
 
-      toast.error("Payment failed");
+    toast.error("Payment failed");
 
-    }
+  }
 
-  };
+};
 
   return (
     <div>
